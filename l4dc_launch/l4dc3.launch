@@ -1,0 +1,9 @@
+<launch>
+
+  <node pkg="joy" name="joy_node" type="joy_node">
+  </node>
+
+  <node pkg="l4dc" name="l4dc3_node" type="l4dc3_node">
+  </node>
+
+</launch>
