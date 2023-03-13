@@ -22,8 +22,14 @@ ament_target_dependencies(l4dc4_node rclcpp std_msgs can_plugins2 sensor_msgs)
 
 install(
   TARGETS l4dc3_node l4dc4_node
-  DESTINATION lib/${PROJECT_NAME}
+  DESTINATION lib/${PROJECT_NAME} 
 )  
+
+# Install launch files.
+install(DIRECTORY
+  l4dc_launch
+  DESTINATION share/${PROJECT_NAME}/
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
