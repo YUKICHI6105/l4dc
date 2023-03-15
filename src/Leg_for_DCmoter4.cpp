@@ -79,7 +79,7 @@ void pubsub::joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg)
     //chatter.publish(get_frame(0x101, x/static_cast<float>(sqrt(2))-y/static_cast<float>(sqrt(2))));
     //100右上、110左上、120左下、130右下
 
-    RCLCPP_INFO(this->get_logger(), "Publishing:");
+    RCLCPP_INFO(this->get_logger(), "Publishing:bokuha warukunai!");
   }
 
 int main(int argc, char * argv[])
