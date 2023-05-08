@@ -35,21 +35,21 @@ void pubsub::joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg)
 
     if(msg->buttons[2]==1)
     {
-      publisher_->publish(get_frame(0x100,static_cast<uint8_t>(5)));
-      publisher_->publish(get_frame(0x110,static_cast<uint8_t>(5)));
-      publisher_->publish(get_frame(0x120,static_cast<uint8_t>(5)));
-      publisher_->publish(get_frame(0x130,static_cast<uint8_t>(5)));
-      publisher_->publish(get_frame(0x140,static_cast<uint8_t>(5)));
+      publisher_->publish(get_frame(0x160,static_cast<uint8_t>(5)));
+      publisher_->publish(get_frame(0x164,static_cast<uint8_t>(5)));
+      publisher_->publish(get_frame(0x168,static_cast<uint8_t>(5)));
+      publisher_->publish(get_frame(0x16c,static_cast<uint8_t>(5)));
+      publisher_->publish(get_frame(0x180,static_cast<uint8_t>(5)));
       publisher_->publish(get_frame(0x200,static_cast<uint8_t>(5)));
       publisher_->publish(get_frame(0x210,static_cast<uint8_t>(5)));
     }
 
     if(msg->buttons[1]==1)
     {
-      publisher_->publish(get_frame(0x100,static_cast<uint8_t>(0)));
-      publisher_->publish(get_frame(0x110,static_cast<uint8_t>(0)));
-      publisher_->publish(get_frame(0x120,static_cast<uint8_t>(0)));
-      publisher_->publish(get_frame(0x130,static_cast<uint8_t>(0)));
+      publisher_->publish(get_frame(0x160,static_cast<uint8_t>(0)));
+      publisher_->publish(get_frame(0x164,static_cast<uint8_t>(0)));
+      publisher_->publish(get_frame(0x168,static_cast<uint8_t>(0)));
+      publisher_->publish(get_frame(0x16c,static_cast<uint8_t>(0)));
       publisher_->publish(get_frame(0x140,static_cast<uint8_t>(0)));
       publisher_->publish(get_frame(0x200,static_cast<uint8_t>(0)));
       publisher_->publish(get_frame(0x210,static_cast<uint8_t>(0)));
@@ -72,14 +72,15 @@ void pubsub::joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg)
       r =0.0f;
     }
     //右回転
-    publisher_->publish(get_frame(0x141, 6.28f*(y-x+r)));
-    publisher_->publish(get_frame(0x111, 6.28f*(-x-y+r)));
-    publisher_->publish(get_frame(0x121, 6.28f*(x-y+r)));
-    publisher_->publish(get_frame(0x131, 6.28f*(x+y+r)));
+    publisher_->publish(get_frame(0x161, 1.0f*(y-x+r)));
+    publisher_->publish(get_frame(0x165, 1.0f*(-x-y+r)));
+    publisher_->publish(get_frame(0x169, 1.0f*(x-y+r)));
+    publisher_->publish(get_frame(0x16d, 1.0f*(x+y+r)));
     //chatter.publish(get_frame(0x101, x/static_cast<float>(sqrt(2))-y/static_cast<float>(sqrt(2))));
     //100右上、110左上、120左下、130右下
 
     RCLCPP_INFO(this->get_logger(), "Publishing:bokuha warukunai!");
+    //RCLCPP_INFO(this->get_logger(), 1.0f*(y-x+r));
   }
 
 int main(int argc, char * argv[])
