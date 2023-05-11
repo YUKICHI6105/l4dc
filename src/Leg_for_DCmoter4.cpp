@@ -65,22 +65,26 @@ void pubsub::joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg)
     //↑左回転
     else if(msg->buttons[5]==1)
     {
-      r =-1.0f;
+     r =-1.0f;
     }
     else if(msg->buttons[4] == msg->buttons[5])
     {
-      r =0.0f;
+     r =0.0f;
     }
-    //右回転
-    publisher_->publish(get_frame(0x161, 1.0f*(y-x+r)));
-    publisher_->publish(get_frame(0x165, 1.0f*(-x-y+r)));
-    publisher_->publish(get_frame(0x169, 1.0f*(x-y+r)));
-    publisher_->publish(get_frame(0x16d, 1.0f*(x+y+r)));
-    //chatter.publish(get_frame(0x101, x/static_cast<float>(sqrt(2))-y/static_cast<float>(sqrt(2))));
-    //100右上、110左上、120左下、130右下
+    if((x != 0) || (y != 0)){
+      //右回転
+      publisher_->publish(get_frame(0x161, 1.0f*(y-x+r)));
+      publisher_->publish(get_frame(0x165, 1.0f*(-x-y+r)));
+      publisher_->publish(get_frame(0x169, 1.0f*(x-y+r)));
+      publisher_->publish(get_frame(0x16d, 1.0f*(x+y+r)));
+      //chatter.publish(get_frame(0x101, x/static_cast<float>(sqrt(2))-y/static_cast<float>(sqrt(2))));
+      //100右上、110左上、120左下、130右下
 
-    RCLCPP_INFO(this->get_logger(), "Publishing:bokuha warukunai!");
-    //RCLCPP_INFO(this->get_logger(), 1.0f*(y-x+r));
+      RCLCPP_INFO(this->get_logger(), "Publishing:bokuha warukunai!");
+      std::string str = std::to_string(1.0f*(y-x+r));
+      const char* cstr = str.c_str();
+      RCLCPP_INFO(this->get_logger(), cstr);
+    }
   }
 
 int main(int argc, char * argv[])
