@@ -32,16 +32,16 @@ static std::unique_ptr<can_plugins2::msg::Frame> get_frame(const uint16_t id, co
 template<typename T>
 static std::unique_ptr<can_plugins2::msg::Frame> shirasu_frame(const uint16_t id, const T data){
   auto frame = std::make_unique<can_plugins2::msg::Frame>();
+  auto chengeFrame = std::make_unique<can_plugins2::msg::Frame>();
   frame->id = id;
   frame->is_rtr = false;
   frame->is_extended = false;
   frame->is_error = false;
   frame->dlc = sizeof(T);
-  can_pack<T>(frame->data, data);
-  auto chengeFrame = std::make_unique<can_plugins2::msg::Frame>();
-  chengeFrame->data = frame->data;
-  for(int i =0;i<3;i++){
-    frame->data[i] = chengeFrame->data[i];
-  }
+  can_pack<T>(chengeFrame->data, data);
+  frame->data[0] = chengeFrame->data[3];
+  frame->data[1] = chengeFrame->data[2];
+  frame->data[2] = chengeFrame->data[1];
+  frame->data[3] = chengeFrame->data[0];
   return frame;
 }
