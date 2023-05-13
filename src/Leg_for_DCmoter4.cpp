@@ -31,7 +31,7 @@ class pubsub : public rclcpp::Node
 
 void pubsub::joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg)
   {  
-    RCLCPP_INFO(this->get_logger(), "I heard:");
+//    RCLCPP_INFO(this->get_logger(), "I heard:");
 
     if(msg->buttons[2]==1)
     {
@@ -73,10 +73,10 @@ void pubsub::joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg)
     }
     if((x != 0) || (y != 0)){
       //右回転
-      publisher_->publish(get_frame(0x161, 1.0f*(y-x+r)));
-      publisher_->publish(get_frame(0x165, 1.0f*(-x-y+r)));
-      publisher_->publish(get_frame(0x169, 1.0f*(x-y+r)));
-      publisher_->publish(get_frame(0x16d, 1.0f*(x+y+r)));
+      publisher_->publish(shirasu_frame(0x161, 1.0f*(y-x+r)));
+      publisher_->publish(shirasu_frame(0x165, 1.0f*(-x-y+r)));
+      publisher_->publish(shirasu_frame(0x169, 1.0f*(x-y+r)));
+      publisher_->publish(shirasu_frame(0x16d, 1.0f*(x+y+r)));
       //chatter.publish(get_frame(0x101, x/static_cast<float>(sqrt(2))-y/static_cast<float>(sqrt(2))));
       //100右上、110左上、120左下、130右下
 
