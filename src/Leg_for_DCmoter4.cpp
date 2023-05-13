@@ -27,6 +27,7 @@ class pubsub : public rclcpp::Node
     rclcpp::Publisher<can_plugins2::msg::Frame>::SharedPtr publisher_;
     rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr subscriber_;
     size_t count_;
+    int count = 0;
 };
 
 void pubsub::joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg)
@@ -79,6 +80,7 @@ void pubsub::joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg)
       publisher_->publish(shirasu_frame(0x16d, 6.28f*(x+y+r)));
       //chatter.publish(get_frame(0x101, x/static_cast<float>(sqrt(2))-y/static_cast<float>(sqrt(2))));
       //100右上、110左上、120左下、130右下
+      count = 0;
 
       RCLCPP_INFO(this->get_logger(), "Publishing:bokuha warukunai!");
       std::string str = std::to_string(1.0f*(y-x+r));
@@ -86,7 +88,13 @@ void pubsub::joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg)
       RCLCPP_INFO(this->get_logger(), cstr);
     }
     else{
-      
+      if(count == 0){
+        publisher_->publish(shirasu_frame(0x161, 0.0f));
+        publisher_->publish(shirasu_frame(0x165, 0.0f));
+        publisher_->publish(shirasu_frame(0x169, 0.0f));
+        publisher_->publish(shirasu_frame(0x16d, 0.0f));
+        count = 1;
+      }
     }
   }
 
