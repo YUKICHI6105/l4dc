@@ -1,0 +1,7 @@
+l4dc4_node:
+  ros__parameters:
+    maxSpeed: 3.14
+    upperRight: 0x110
+    upperLeft: 0x120
+    lowerLeft: 0x130
+    lowerRight: 0x140
