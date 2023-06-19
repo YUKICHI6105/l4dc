@@ -27,7 +27,7 @@ install(
 
 # Install launch files.
 install(DIRECTORY
-  l4dc_launch
+  l4dc_launch config
   DESTINATION share/${PROJECT_NAME}/
 )
 
