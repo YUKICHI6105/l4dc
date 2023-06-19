@@ -4,6 +4,9 @@
   </node>
 
   <node pkg="l4dc" exec="l4dc4_node" name="l4dc4_node">
+    <param from="$(find-pkg-share l4dc)/config/l4dc4.yaml"/>
   </node>
+
+  <include file="$(find-pkg-share can_plugins2)/launch/slcan_bridge_launch.xml"/>
 
 </launch>
