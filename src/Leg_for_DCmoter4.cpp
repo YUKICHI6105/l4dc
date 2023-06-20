@@ -4,8 +4,6 @@
 #include <chrono>
 #include <functional>
 
-#include <array>
-
 #include <rclcpp/rclcpp.hpp>
 #include "can_plugins2/msg/frame.hpp"
 #include <sensor_msgs/msg/joy.hpp>
@@ -30,6 +28,7 @@ class pubsub : public rclcpp::Node
     int count = 0;
     float maxSpeed = 0.0f;//厳密にはちょっと違う。
     ShirasuLegID shirasuID;
+    uint32_t array[8];
   public:
     pubsub() : Node("l4dc4_node"), count_(0)
     {
@@ -43,17 +42,17 @@ class pubsub : public rclcpp::Node
       this->declare_parameter("shirasuVel", 2);
       this->declare_parameter("shirasuDis", 1);
       //ツイスト型の調査
-      //電磁弁ボタンのパラメーター
-      //電磁弁のトグルモード
-//      declare_parameter("solenoidValveEnable");
-      this->declare_parameter("solenoidValve1", 0);
-      this->declare_parameter("solenoidValve2", 0);
-      this->declare_parameter("solenoidValve3", 0);
-      this->declare_parameter("solenoidValve4", 0);
-      this->declare_parameter("solenoidValve5", 0);
-      this->declare_parameter("solenoidValve6", 0);
-      this->declare_parameter("solenoidValve7", 0);
-      this->declare_parameter("solenoidValveMode1", "Toggle");
+      this->declare_parameter("solenoidValveEnable", rclcpp::PARAMETER_INTEGER_ARRAY);
+      std::vector<rclcpp::Parameter> all_new_parameters{rclcpp::Parameter("solenoidValveEnable", array)};
+      this->set_parameters(all_new_parameters);
+      this->declare_parameter("solenoidValveBottom1", 0);//電磁弁ボタンのパラメーター
+      this->declare_parameter("solenoidValveBottom2", 0);
+      this->declare_parameter("solenoidValveBottom3", 0);
+      this->declare_parameter("solenoidValveBottom4", 0);
+      this->declare_parameter("solenoidValveBottom5", 0);
+      this->declare_parameter("solenoidValveBottom6", 0);
+      this->declare_parameter("solenoidValveBottom7", 0);
+      this->declare_parameter("solenoidValveMode1", "Toggle");//電磁弁のトグルモード
       this->declare_parameter("solenoidValveMode2", "Toggle");
       this->declare_parameter("solenoidValveMode3", "Toggle");
       this->declare_parameter("solenoidValveMode4", "Toggle");
@@ -63,45 +62,59 @@ class pubsub : public rclcpp::Node
       timer_ = this->create_wall_timer(1000ms, std::bind(&pubsub::timer_callback, this));
       timer_callback();
     }
+    void timer_callback();
+    void shirasuValuePublish(float upperRight,float upperLeft,float lowerLeft,float lowerRight);
+    void shirasuModePublish(uint8_t upperRight,uint8_t upperLeft,uint8_t lowerLeft,uint8_t lowerRight);
+};
 
-    void timer_callback()
+void pubsub::timer_callback()
     {
       maxSpeed = this->get_parameter("maxSpeed").as_double();
       shirasuID.upperRightID = this->get_parameter("upperRight").as_int();
       shirasuID.upperLeftID = this->get_parameter("upperLeft").as_int();
       shirasuID.lowerLeftID = this->get_parameter("lowerLeft").as_int();
       shirasuID.lowerRightID = this->get_parameter("lowerRight").as_int();
+      for(int i=0; i<8; i++){
+        array[i] = this->get_parameter("solenoidValveEnable").as_integer_array()[i];
+      }
 //      this->set_parameters(rclcpp::Parameter("solenoidValueEnable", std::vector<uint8_t>({0xff, 0x7f})));
       RCLCPP_INFO(this->get_logger(), "max speed %f!", maxSpeed);
       RCLCPP_INFO(this->get_logger(), "upperRight %d!", shirasuID.upperRightID);
       RCLCPP_INFO(this->get_logger(), "upperLeft %d!", shirasuID.upperLeftID);
       RCLCPP_INFO(this->get_logger(), "lowerLeft %d!", shirasuID.lowerLeftID);
       RCLCPP_INFO(this->get_logger(), "lowerRight %d!", shirasuID.lowerRightID);
+      RCLCPP_INFO(this->get_logger(), "valve_mode %d %d %d %d %d %d %d %d!", array[0],array[1],array[2],array[3],array[4],array[5],array[6],array[7]);
       //std::vector<rclcpp::Parameter> all_new_parameters{rclcpp::Parameter("my_parameter", "world")};
       //this->set_parameters(all_new_parameters);
     }
-};
+
+void pubsub::shirasuValuePublish(float upperRight,float upperLeft,float lowerLeft,float lowerRight){
+  publisher_->publish(shirasu_frame(shirasuID.upperRightID+1, upperRight));
+  publisher_->publish(shirasu_frame(shirasuID.upperLeftID+1, upperLeft));
+  publisher_->publish(shirasu_frame(shirasuID.lowerLeftID+1, lowerLeft));
+  publisher_->publish(shirasu_frame(shirasuID.lowerRightID+1, lowerRight));
+  //100右上、110左上、120左下、130右下
+}
+
+void pubsub::shirasuModePublish(uint8_t upperRight,uint8_t upperLeft,uint8_t lowerLeft,uint8_t lowerRight){
+  publisher_->publish(shirasu_frame(shirasuID.upperRightID+1, static_cast<uint8_t>(upperRight)));
+  publisher_->publish(shirasu_frame(shirasuID.upperLeftID+1, static_cast<uint8_t>(upperLeft)));
+  publisher_->publish(shirasu_frame(shirasuID.lowerLeftID+1, static_cast<uint8_t>(lowerLeft)));
+  publisher_->publish(shirasu_frame(shirasuID.lowerRightID+1, static_cast<uint8_t>(lowerRight)));
+  //100右上、110左上、120左下、130右下
+}
 
 void pubsub::joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg)
   {  
 //    RCLCPP_INFO(this->get_logger(), "I heard:");
     if(msg->buttons[this->get_parameter("shirasuVel").as_int()]==1)
     {
-      publisher_->publish(get_frame(shirasuID.upperRightID,static_cast<uint8_t>(5)));
-      publisher_->publish(get_frame(shirasuID.upperLeftID,static_cast<uint8_t>(5)));
-      publisher_->publish(get_frame(shirasuID.lowerLeftID,static_cast<uint8_t>(5)));
-      publisher_->publish(get_frame(shirasuID.lowerRightID,static_cast<uint8_t>(5)));
-      publisher_->publish(get_frame(0x180,static_cast<uint8_t>(5)));
-      publisher_->publish(get_frame(0x200,static_cast<uint8_t>(5)));
-      publisher_->publish(get_frame(0x210,static_cast<uint8_t>(5)));
+      shirasuModePublish(5,5,5,5);
     }
 
     if(msg->buttons[this->get_parameter("shirasuDis").as_int()]==1)
     {
-      publisher_->publish(get_frame(shirasuID.upperRightID,static_cast<uint8_t>(0)));
-      publisher_->publish(get_frame(shirasuID.upperLeftID,static_cast<uint8_t>(0)));
-      publisher_->publish(get_frame(shirasuID.lowerLeftID,static_cast<uint8_t>(0)));
-      publisher_->publish(get_frame(shirasuID.lowerRightID,static_cast<uint8_t>(0)));
+      shirasuModePublish(0,0,0,0);
       publisher_->publish(get_frame(0x140,static_cast<uint8_t>(0)));
       publisher_->publish(get_frame(0x200,static_cast<uint8_t>(0)));
       publisher_->publish(get_frame(0x210,static_cast<uint8_t>(0)));
@@ -125,10 +138,7 @@ void pubsub::joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg)
     }
     if((x != 0) || (y != 0)){
       //右回転
-      publisher_->publish(shirasu_frame(shirasuID.upperRightID+1, maxSpeed*(y-x+r)));
-      publisher_->publish(shirasu_frame(shirasuID.upperLeftID+1, maxSpeed*(-x-y+r)));
-      publisher_->publish(shirasu_frame(shirasuID.lowerLeftID+1, maxSpeed*(x-y+r)));
-      publisher_->publish(shirasu_frame(shirasuID.lowerRightID+1, maxSpeed*(x+y+r)));
+      shirasuValuePublish(maxSpeed*(y-x+r),maxSpeed*(-x-y+r),maxSpeed*(x-y+r),maxSpeed*(x+y+r));
       //chatter.publish(get_frame(0x101, x/static_cast<float>(sqrt(2))-y/static_cast<float>(sqrt(2))));
       //100右上、110左上、120左下、130右下
       count = 0;
@@ -140,10 +150,7 @@ void pubsub::joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg)
     }
     else{
       if(count == 0){
-        publisher_->publish(shirasu_frame(shirasuID.upperRightID+1, 0.0f));
-        publisher_->publish(shirasu_frame(shirasuID.upperLeftID+1, 0.0f));
-        publisher_->publish(shirasu_frame(shirasuID.lowerLeftID+1, 0.0f));
-        publisher_->publish(shirasu_frame(shirasuID.lowerRightID+1, 0.0f));
+        shirasuValuePublish(0.0f,0.0f,0.0f,0.0f);
         count = 1;
       }
     }

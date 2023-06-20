@@ -5,3 +5,20 @@ l4dc4_node:
     upperLeft: 0x120
     lowerLeft: 0x130
     lowerRight: 0x140
+    shirasuVel: 2
+    shirasuDis: 1
+    solenoidValveEnable: [0,0,0,0,0,0,0,0]
+    solenoidValveBottom1: 0
+    solenoidValveBottom2: 0
+    solenoidValveBottom3: 0
+    solenoidValveBottom4: 0
+    solenoidValveBottom5: 0
+    solenoidValveBottom6: 0
+    solenoidValveBottom7: 0
+    solenoidValveMode1: "Toggle"
+    solenoidValveMode2: "Toggle"
+    solenoidValveMode3: "Toggle"
+    solenoidValveMode4: "Toggle"
+    solenoidValveMode5: "Toggle"
+    solenoidValveMode6: "Toggle"
+    solenoidValveMode7: "Toggle"

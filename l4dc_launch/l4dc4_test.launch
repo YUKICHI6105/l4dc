@@ -1,0 +1,5 @@
+<launch>
+    <node pkg="l4dc" exec="l4dc4_node" name="l4dc4_node">
+        <param from="$(find-pkg-share l4dc)/config/l4dc4.yaml"/>
+    </node>
+</launch>
