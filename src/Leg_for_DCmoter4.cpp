@@ -96,10 +96,10 @@ void pubsub::shirasuValuePublish(float upperRight,float upperLeft,float lowerLef
 }
 
 void pubsub::shirasuModePublish(uint8_t upperRight,uint8_t upperLeft,uint8_t lowerLeft,uint8_t lowerRight){
-  publisher_->publish(get_frame(shirasuID.upperRightID+1, static_cast<uint8_t>(upperRight)));
-  publisher_->publish(get_frame(shirasuID.upperLeftID+1, static_cast<uint8_t>(upperLeft)));
-  publisher_->publish(get_frame(shirasuID.lowerLeftID+1, static_cast<uint8_t>(lowerLeft)));
-  publisher_->publish(get_frame(shirasuID.lowerRightID+1, static_cast<uint8_t>(lowerRight)));
+  publisher_->publish(get_frame(shirasuID.upperRightID, static_cast<uint8_t>(upperRight)));
+  publisher_->publish(get_frame(shirasuID.upperLeftID, static_cast<uint8_t>(upperLeft)));
+  publisher_->publish(get_frame(shirasuID.lowerLeftID, static_cast<uint8_t>(lowerLeft)));
+  publisher_->publish(get_frame(shirasuID.lowerRightID, static_cast<uint8_t>(lowerRight)));
   //100右上、110左上、120左下、130右下
 }
 
@@ -125,6 +125,7 @@ void pubsub::publishValve(uint32_t channel,uint32_t button,std::string mode,cons
       if(mode=="Normal"){
         statusArray[channel-1]=0;
         publisher_->publish(get_frame(0x101,statusArray));
+        countvalve0=1;     
       }
     }
     if(countvalve1==1){

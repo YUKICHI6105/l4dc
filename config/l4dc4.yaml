@@ -8,5 +8,5 @@ l4dc4_node:
     shirasuVelButton: 2
     shirasuDisButton: 1
     solenoidValveEnable: [0,0,0,0,0,0,0,0] #[1番,2番,3番,4番,5番,6番,7番,無意味] 0 or 1
-    solenoidValveButton: [1,0,0,0,0,0,0,0] #[1番,2番,3番,4番,5番,6番,7番,無意味]
+    solenoidValveButton: [0,0,0,0,0,0,0,0] #[1番,2番,3番,4番,5番,6番,7番,無意味]
     solenoidValveMode: ["Normal","Toggle","Toggle","Toggle","Toggle","Toggle","Toggle","Toggle"]
