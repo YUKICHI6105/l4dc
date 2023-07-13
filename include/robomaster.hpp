@@ -27,22 +27,28 @@ static std::unique_ptr<can_plugins2::msg::Frame> robomaster_frame(const uint16_t
 
 void splitUint16(uint16_t input, uint8_t* outputArray,int number) {
   // 上位ビットを取得して下位8ビットに格納
-  outputArray[number*2] = input >> 8;
+  outputArray[(number-1)*2] = input >> 8;
 
   // 下位ビットをビットマスクして上位8ビットに格納
-  outputArray[number*2-1] = input & 0xFF;
+  outputArray[(number-1)*2+1] = input & 0xFF;
+}
+
+uint16_t combineBytes(uint8_t highByte, uint8_t lowByte) {
+  uint16_t result = (static_cast<uint16_t>(highByte) << 8) | lowByte;
+  return result;
 }
 
 void formatvalue(float current,uint8_t value[8], int number){
   if(current < 0){
     float uncurrent = -current;
-    uint16_t uint16current = uncurrent/20*16384;
-    uint16current = uint16current | 0x8000 ;
-    std::cout << uint16current << std::endl;
+    uint16_t uint16current = (uncurrent/20)*16384;
+    uint16current =~ uint16current ;
+    //std::cout << uint16current << std::endl;
     splitUint16(uint16current,value,number);
   }else{
-    uint16_t uint16current = current/20*16384;
-    std::cout << uint16current << std::endl;
+    uint16_t uint16current = (current/20)*16384;
+    //std::cout << uint16current << std::endl;
     splitUint16(uint16current,value,number);
   }
+  //std::cout << value[0] << std::endl;
 }

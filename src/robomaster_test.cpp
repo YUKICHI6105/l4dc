@@ -25,7 +25,7 @@ class RoboMaster : public rclcpp::Node{
     rclcpp::Subscription<can_plugins2::msg::Frame>::SharedPtr subscriber_can_rx;
     size_t count_;
     robomasterNumber robomaster;
-    float x=0.0; 
+    float x=0.3; 
     float y=0.0; 
     float r=0.0;
     
@@ -55,7 +55,8 @@ void RoboMaster::timer_callback(){
 }
 
 void RoboMaster::can_callback(const can_plugins2::msg::Frame msg){
-    RCLCPP_INFO(this->get_logger(),"test %u %u %u",msg.id,msg.data[0],msg.data[1]);
+    uint16_t test = combineBytes(msg.data[0],msg.data[1]);
+    RCLCPP_INFO(this->get_logger(),"current %u %u",msg.id,test);
 }
 
 void RoboMaster::joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg){
@@ -66,12 +67,12 @@ void RoboMaster::joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg){
 
 void RoboMaster::robomasterValuePublish(float currentUpperRight,float currentUpperLeft,float currentLowerLeft,float currentLowerRight){
     uint8_t value[8];
+    //value[0] = 0;
     formatvalue(currentUpperRight,value,robomaster.upperRight);
     formatvalue(currentUpperLeft,value,robomaster.upperLeft);
     formatvalue(currentLowerLeft,value,robomaster.lowerLeft);
     formatvalue(currentLowerRight,value,robomaster.lowerRight);
-
-    //RCLCPP_INFO(this->get_logger(), "max speed %d!", test);
+    //RCLCPP_INFO(this->get_logger(), "max speed %u!", value[0]); 
     publisher_->publish(robomaster_frame(0x200, value));
 }
 
