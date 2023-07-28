@@ -1,0 +1,6 @@
+robomaster_test_node:
+  ros__parameters:
+    upperRight: 1
+    upperLeft: 2
+    lowwerLeft: 3
+    lowerRight: 4

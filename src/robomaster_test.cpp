@@ -24,8 +24,8 @@ class RoboMaster : public rclcpp::Node{
     rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr subscriber_joy;
     rclcpp::Subscription<can_plugins2::msg::Frame>::SharedPtr subscriber_can_rx;
     size_t count_;
-    robomasterNumber robomaster;
-    float x=0.3; 
+    Robomaster<RobomasterFeedback> feedback;
+    float x=0.0; 
     float y=0.0; 
     float r=0.0;
     
@@ -47,18 +47,52 @@ class RoboMaster : public rclcpp::Node{
 };
 
 void RoboMaster::timer_callback(){
-    robomaster.upperRight = this->get_parameter("upperRight").as_int();
-    robomaster.upperLeft = this->get_parameter("upperLeft").as_int();
-    robomaster.lowerLeft = this->get_parameter("lowerLeft").as_int();
-    robomaster.lowerRight = this->get_parameter("lowerRight").as_int();
+    feedback.upperRight.number = this->get_parameter("upperRight").as_int();
+    feedback.upperLeft.number = this->get_parameter("upperLeft").as_int();
+    feedback.lowerLeft.number = this->get_parameter("lowerLeft").as_int();
+    feedback.lowerRight.number = this->get_parameter("lowerRight").as_int();
     robomasterValuePublish((y-x+r),(-x-y+r),(x-y+r),(x+y+r));
 }
 
 void RoboMaster::can_callback(const can_plugins2::msg::Frame msg){
-    uint16_t test = combineBytes(msg.data[0],msg.data[1]);
-    RCLCPP_INFO(this->get_logger(),"current %u %u",msg.id,test);
+    if(msg.id == (0x200+feedback.upperRight.number)){
+        feedback.upperRight.locate = combineBytes(msg.data[0],msg.data[1]);
+        feedback.upperRight.speed = combineBytes(msg.data[2],msg.data[3]);
+        feedback.upperRight.current = combineBytes(msg.data[4],msg.data[5]);
+        feedback.upperRight.temperature = msg.data[6];
+        RCLCPP_INFO(this->get_logger(),"ID %u current %u",msg.id,feedback.upperRight.current);
+    }else if(msg.id == (0x200+feedback.upperLeft.number)){
+        feedback.upperLeft.locate = combineBytes(msg.data[0],msg.data[1]);
+        feedback.upperLeft.speed = combineBytes(msg.data[2],msg.data[3]);
+        feedback.upperLeft.current = combineBytes(msg.data[4],msg.data[5]);
+        feedback.upperLeft.temperature = msg.data[6];
+        RCLCPP_INFO(this->get_logger(),"ID %u current %u",msg.id,feedback.upperLeft.current);
+    }else if(msg.id == (0x200+feedback.lowerLeft.number)){
+        feedback.lowerLeft.locate = combineBytes(msg.data[0],msg.data[1]);
+        feedback.lowerLeft.speed = combineBytes(msg.data[2],msg.data[3]);
+        feedback.lowerLeft.current = combineBytes(msg.data[4],msg.data[5]);
+        feedback.lowerLeft.temperature = msg.data[6];
+        RCLCPP_INFO(this->get_logger(),"ID %u current %u",msg.id,feedback.lowerLeft.current);
+    }else if(msg.id == (0x200+feedback.lowerRight.number)){
+        feedback.lowerRight.locate = combineBytes(msg.data[0],msg.data[1]);
+        feedback.lowerRight.speed = combineBytes(msg.data[2],msg.data[3]);
+        feedback.lowerRight.current = combineBytes(msg.data[4],msg.data[5]);
+        feedback.lowerRight.temperature = msg.data[6];
+        RCLCPP_INFO(this->get_logger(),"ID %u current %u",msg.id,feedback.lowerRight.current);
+    }
 }
+/*
+int hirei;//ゲインと比例値をかけたもの
+int sekibunn;//ゲインと積分値をかけたもの
+int bibunn;//ゲインと微分値をかけたもの
 
+int mokuhyouu;
+int gennzai;
+
+void himozawa(){
+int tomozawa = hirei+sekibunn+bibunn+gennzai;
+}
+*/
 void RoboMaster::joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg){
     x= -(msg->axes[0]);
     y=  (msg->axes[1]);
@@ -67,11 +101,10 @@ void RoboMaster::joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg){
 
 void RoboMaster::robomasterValuePublish(float currentUpperRight,float currentUpperLeft,float currentLowerLeft,float currentLowerRight){
     uint8_t value[8];
-    //value[0] = 0;
-    formatvalue(currentUpperRight,value,robomaster.upperRight);
-    formatvalue(currentUpperLeft,value,robomaster.upperLeft);
-    formatvalue(currentLowerLeft,value,robomaster.lowerLeft);
-    formatvalue(currentLowerRight,value,robomaster.lowerRight);
+    formatvalue(currentUpperRight,value,feedback.upperRight.number);
+    formatvalue(currentUpperLeft,value,feedback.upperLeft.number);
+    formatvalue(currentLowerLeft,value,feedback.lowerLeft.number);
+    formatvalue(currentLowerRight,value,feedback.lowerRight.number);
     //RCLCPP_INFO(this->get_logger(), "max speed %u!", value[0]); 
     publisher_->publish(robomaster_frame(0x200, value));
 }

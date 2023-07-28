@@ -2,12 +2,20 @@
 #include <array>
 #include <can_plugins2/msg/frame.hpp>
 
+struct RobomasterFeedback{
+  uint32_t number;
+  uint16_t locate;
+  uint16_t speed;
+  uint16_t current;
+  uint16_t temperature;
+};
 
-struct robomasterNumber{//ロボマスの番号
-  uint32_t upperRight;//右上
-  uint32_t upperLeft;//左上
-  uint32_t lowerLeft;//左下
-  uint32_t lowerRight;//右下
+template <typename T>
+struct Robomaster{//ロボマスの番号
+  T upperRight;//右上
+  T upperLeft;//左上
+  T lowerLeft;//左下
+  T lowerRight;//右下
 };
 
 static std::unique_ptr<can_plugins2::msg::Frame> robomaster_frame(const uint16_t id,uint8_t data[8])
@@ -43,12 +51,9 @@ void formatvalue(float current,uint8_t value[8], int number){
     float uncurrent = -current;
     uint16_t uint16current = (uncurrent/20)*16384;
     uint16current =~ uint16current ;
-    //std::cout << uint16current << std::endl;
     splitUint16(uint16current,value,number);
   }else{
     uint16_t uint16current = (current/20)*16384;
-    //std::cout << uint16current << std::endl;
     splitUint16(uint16current,value,number);
   }
-  //std::cout << value[0] << std::endl;
 }
