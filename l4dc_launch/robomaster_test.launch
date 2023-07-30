@@ -1,0 +1,11 @@
+<launch>
+
+  <node pkg="joy" exec="joy_node" name="joy_node">
+  </node>
+
+  <node pkg="l4dc" exec="robomaster_test_node" name="robomaster_test_node">
+  </node>
+
+  <include file="$(find-pkg-share can_plugins2)/launch/slcan_bridge_launch.xml"/>
+
+</launch>
