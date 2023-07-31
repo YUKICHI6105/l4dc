@@ -34,15 +34,15 @@ class pubsub : public rclcpp::Node
     uint8_t countvalve0 = 0;
     uint8_t countvalve1 = 0;
   public:
-    pubsub() : Node("l4dc4_node"), count_(0)
+    pubsub() : Node("RoboMaster4_node"), count_(0)
     {
       publisher_ = this->create_publisher<can_plugins2::msg::Frame>("can_tx", 10);
       subscriber_ = this->create_subscription<sensor_msgs::msg::Joy>("joy", 10, std::bind(&pubsub::joy_callback, this, _1));
       this->declare_parameter("maxSpeed", 6.28f);
-      this->declare_parameter("upperRight", 0x160);
-      this->declare_parameter("upperLeft", 0x164);
-      this->declare_parameter("lowerLeft", 0x168);
-      this->declare_parameter("lowerRight", 0x16c);
+      this->declare_parameter("upperRight", 1);
+      this->declare_parameter("upperLeft", 2);
+      this->declare_parameter("lowerLeft", 3);
+      this->declare_parameter("lowerRight", 4);
       this->declare_parameter("shirasuVelButton", 2);
       this->declare_parameter("shirasuDisButton", 1);
       //ツイスト型の調査
@@ -58,7 +58,7 @@ class pubsub : public rclcpp::Node
       std::vector<rclcpp::Parameter> valve_mode_parameters{rclcpp::Parameter("solenoidValveMode", valveModeArray)};
       this->set_parameters(valve_mode_parameters);
       
-      timer_ = this->create_wall_timer(1000ms, std::bind(&pubsub::timer_callback, this));
+      timer_ = this->create_wall_timer(400ms, std::bind(&pubsub::timer_callback, this));
       timer_callback();
     }
     void timer_callback();
@@ -67,24 +67,23 @@ class pubsub : public rclcpp::Node
     void publishValve(uint32_t channel,uint32_t bottom,std::string mode,const sensor_msgs::msg::Joy::SharedPtr msg1);
 };
 
-void pubsub::timer_callback()
-    {
-      maxSpeed = this->get_parameter("maxSpeed").as_double();
-      shirasuID.upperRightID = this->get_parameter("upperRight").as_int();
-      shirasuID.upperLeftID = this->get_parameter("upperLeft").as_int();
-      shirasuID.lowerLeftID = this->get_parameter("lowerLeft").as_int();
-      shirasuID.lowerRightID = this->get_parameter("lowerRight").as_int();
-      for(int i=0; i<8; i++){
-        valveEnableArray[i] = this->get_parameter("solenoidValveEnable").as_integer_array()[i];
-        valveButtonArray[i] = this->get_parameter("solenoidValveButton").as_integer_array()[i];
-        valveModeArray[i] = this->get_parameter("solenoidValveMode").as_string_array()[i];
-      }
-      RCLCPP_INFO(this->get_logger(), "max speed %f!", maxSpeed);
-      RCLCPP_INFO(this->get_logger(), "upperRight %d! upperLeft %d! lowerLeft %d! lowerRight %d!", shirasuID.upperRightID ,shirasuID.upperLeftID, shirasuID.lowerLeftID, shirasuID.lowerRightID);
-      RCLCPP_INFO(this->get_logger(), "valve_mode %d %d %d %d %d %d %d %d!", valveEnableArray[0],valveEnableArray[1],valveEnableArray[2],valveEnableArray[3],valveEnableArray[4],valveEnableArray[5],valveEnableArray[6],valveEnableArray[7]);
-      RCLCPP_INFO(this->get_logger(), "solenoidValveButton %d %d %d %d %d %d %d %d!", valveButtonArray[0],valveButtonArray[1],valveButtonArray[2],valveButtonArray[3],valveButtonArray[4],valveButtonArray[5],valveButtonArray[6],valveButtonArray[7]);
-      RCLCPP_INFO(this->get_logger(), "solenoidValveMode %s %s %s %s %s %s %s %s!", valveModeArray[0].c_str(), valveModeArray[1].c_str(), valveModeArray[2].c_str(), valveModeArray[3].c_str(), valveModeArray[4].c_str(), valveModeArray[5].c_str(), valveModeArray[6].c_str(), valveModeArray[7].c_str());
+void pubsub::timer_callback(){
+  maxSpeed = this->get_parameter("maxSpeed").as_double();
+  shirasuID.upperRightID = this->get_parameter("upperRight").as_int();
+  shirasuID.upperLeftID = this->get_parameter("upperLeft").as_int();
+  shirasuID.lowerLeftID = this->get_parameter("lowerLeft").as_int();
+  shirasuID.lowerRightID = this->get_parameter("lowerRight").as_int();
+    for(int i=0; i<8; i++){
+      valveEnableArray[i] = this->get_parameter("solenoidValveEnable").as_integer_array()[i];
+      valveButtonArray[i] = this->get_parameter("solenoidValveButton").as_integer_array()[i];
+      valveModeArray[i] = this->get_parameter("solenoidValveMode").as_string_array()[i];
     }
+  RCLCPP_INFO(this->get_logger(), "max speed %f!", maxSpeed);
+  RCLCPP_INFO(this->get_logger(), "upperRight %d! upperLeft %d! lowerLeft %d! lowerRight %d!", shirasuID.upperRightID ,shirasuID.upperLeftID, shirasuID.lowerLeftID, shirasuID.lowerRightID);
+  RCLCPP_INFO(this->get_logger(), "valve_mode %d %d %d %d %d %d %d %d!", valveEnableArray[0],valveEnableArray[1],valveEnableArray[2],valveEnableArray[3],valveEnableArray[4],valveEnableArray[5],valveEnableArray[6],valveEnableArray[7]);
+  RCLCPP_INFO(this->get_logger(), "solenoidValveButton %d %d %d %d %d %d %d %d!", valveButtonArray[0],valveButtonArray[1],valveButtonArray[2],valveButtonArray[3],valveButtonArray[4],valveButtonArray[5],valveButtonArray[6],valveButtonArray[7]);
+  RCLCPP_INFO(this->get_logger(), "solenoidValveMode %s %s %s %s %s %s %s %s!", valveModeArray[0].c_str(), valveModeArray[1].c_str(), valveModeArray[2].c_str(), valveModeArray[3].c_str(), valveModeArray[4].c_str(), valveModeArray[5].c_str(), valveModeArray[6].c_str(), valveModeArray[7].c_str());
+}
 
 void pubsub::shirasuValuePublish(float upperRight,float upperLeft,float lowerLeft,float lowerRight){
   publisher_->publish(shirasu_frame(shirasuID.upperRightID+1, upperRight));
@@ -133,19 +132,22 @@ void pubsub::publishValve(uint32_t channel,uint32_t button,std::string mode,cons
   }
 }
 
-void pubsub::joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg){
-  for(int i=0;i<7;i++){
-    if(valveEnableArray[i]==1){
-      publishValve(i+1,this->get_parameter("solenoidValveButton").as_integer_array()[i],this->get_parameter("solenoidValveMode").as_string_array()[i],msg);
+void pubsub::joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg)
+  { 
+    for(int i=0;i<7;i++){
+      if(valveEnableArray[i]==1){
+        publishValve(i+1,this->get_parameter("solenoidValveButton").as_integer_array()[i],this->get_parameter("solenoidValveMode").as_string_array()[i],msg);
+      }
     }
-  }
 //    RCLCPP_INFO(this->get_logger(), "I heard:");
-    if(msg->buttons[this->get_parameter("shirasuVelButton").as_int()]==1){
+    if(msg->buttons[this->get_parameter("shirasuVelButton").as_int()]==1)
+    {
       shirasuModePublish(5,5,5,5);
       publisher_->publish(valve_frame(0x100, valveEnableArray));
     }
 
-    if(msg->buttons[this->get_parameter("shirasuDisButton").as_int()]==1){
+    if(msg->buttons[this->get_parameter("shirasuDisButton").as_int()]==1)
+    {
       shirasuModePublish(0,0,0,0);
       publisher_->publish(get_frame(0x100,static_cast<uint8_t>(0)));
       publisher_->publish(get_frame(0x140,static_cast<uint8_t>(0)));
@@ -156,14 +158,17 @@ void pubsub::joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg){
     float x= -(msg->axes[0]);
     float y=  (msg->axes[1]);
     float r= 0;
-    if(msg->buttons[4]==1){
-    r =1.0f;//↑左回転
+    if(msg->buttons[4]==1)
+    {
+      r =1.0f;//↑左回転
     }
-    else if(msg->buttons[5]==1){
-      r =-1.0f;//右回転
+    else if(msg->buttons[5]==1)
+    {
+     r =-1.0f;//右回転
     }
-    else if(msg->buttons[4] == msg->buttons[5]){
-      r =0.0f;
+    else if(msg->buttons[4] == msg->buttons[5])
+    {
+     r =0.0f;
     }
     if((x != 0) || (y != 0)){
       shirasuValuePublish(maxSpeed*(y-x+r),maxSpeed*(-x-y+r),maxSpeed*(x-y+r),maxSpeed*(x+y+r));
@@ -181,7 +186,7 @@ void pubsub::joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg){
         count = 1;
       }
     }
-}
+  }
 
 int main(int argc, char * argv[])
 {

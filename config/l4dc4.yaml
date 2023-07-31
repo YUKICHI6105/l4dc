@@ -1,10 +1,10 @@
 l4dc4_node:
   ros__parameters:
     maxSpeed: 3.14
-    upperRight: 0x110
-    upperLeft: 0x120
-    lowerLeft: 0x130
-    lowerRight: 0x140
+    upperRight: 0x160
+    upperLeft: 0x164
+    lowerLeft: 0x168
+    lowerRight: 0x16c
     shirasuVelButton: 2
     shirasuDisButton: 1
     solenoidValveEnable: [0,0,0,0,0,0,0,0] #[1番,2番,3番,4番,5番,6番,7番,無意味] 0 or 1
