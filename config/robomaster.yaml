@@ -4,3 +4,7 @@ robomaster_test_node:
     upperLeft: 2
     lowwerLeft: 3
     lowerRight: 4
+    urGainArray: [0,0,0]
+    ulGainArray: [0,0,0]
+    llGainArray: [0,0,0]
+    lrGainArray: [0,0,0]

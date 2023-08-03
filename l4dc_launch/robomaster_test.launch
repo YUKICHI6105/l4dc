@@ -4,6 +4,7 @@
   </node>
 
   <node pkg="l4dc" exec="robomaster_test_node" name="robomaster_test_node">
+    <param from="$(find-pkg-share l4dc)/config/robomaster.yaml"/>
   </node>
 
   <include file="$(find-pkg-share can_plugins2)/launch/slcan_bridge_launch.xml"/>
