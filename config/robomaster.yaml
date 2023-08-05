@@ -4,7 +4,15 @@ robomaster_test_node:
     upperLeft: 2
     lowwerLeft: 3
     lowerRight: 4
-    urGainArray: [0,0,0]
-    ulGainArray: [0,0,0]
-    llGainArray: [0,0,0]
-    lrGainArray: [0,0,0]
+    urGainKP: 3.14
+    urGainKI: 3.14
+    urGainKD: 3.14
+    ulGainKP: 3.14
+    ulGainKI: 3.14
+    ulGainKD: 3.14
+    llGainKP: 3.14
+    llGainKI: 3.14
+    llGainKD: 3.14
+    lrGainKP: 3.14
+    lrGainKI: 3.14
+    lrGainKD: 3.14

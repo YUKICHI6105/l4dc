@@ -41,10 +41,18 @@ class RoboMaster : public rclcpp::Node{
     this->declare_parameter("upperLeft", 2);
     this->declare_parameter("lowerLeft", 3);
     this->declare_parameter("lowerRight", 4);
-    this->declare_parameter("urGainArray", rclcpp::PARAMETER_DOUBLE_ARRAY);
-    this->declare_parameter("ulGainArray", rclcpp::PARAMETER_DOUBLE_ARRAY);
-    this->declare_parameter("llGainArray", rclcpp::PARAMETER_DOUBLE_ARRAY);
-    this->declare_parameter("lrGainArray", rclcpp::PARAMETER_DOUBLE_ARRAY);
+    this->declare_parameter("urGainKP", 0.0f);
+    this->declare_parameter("urGainKI", 0.0f);
+    this->declare_parameter("urGainKD", 0.0f);
+    this->declare_parameter("ulGainKP", 0.0f);
+    this->declare_parameter("ulGainKI", 0.0f);
+    this->declare_parameter("ulGainKD", 0.0f);
+    this->declare_parameter("llGainKP", 0.0f);
+    this->declare_parameter("llGainKI", 0.0f);
+    this->declare_parameter("llGainKD", 0.0f);
+    this->declare_parameter("lrGainKP", 0.0f);
+    this->declare_parameter("lrGainKI", 0.0f);
+    this->declare_parameter("lrGainKD", 0.0f);
     }
     void timer_callback();
     void can_callback(const can_plugins2::msg::Frame msg);
@@ -57,18 +65,18 @@ void RoboMaster::timer_callback(){
     feedback.upperLeft.number = this->get_parameter("upperLeft").as_int();
     feedback.lowerLeft.number = this->get_parameter("lowerLeft").as_int();
     feedback.lowerRight.number = this->get_parameter("lowerRight").as_int();
-    feedback.upperRight.KP=this->get_parameter("urGainArray").as_double_array()[0];
-    feedback.upperRight.KI=this->get_parameter("urGainArray").as_double_array()[1];
-    feedback.upperRight.KD=this->get_parameter("urGainArray").as_double_array()[2];
-    feedback.upperLeft.KP=this->get_parameter("ulGainArray").as_double_array()[0];
-    feedback.upperLeft.KI=this->get_parameter("ulGainArray").as_double_array()[1];
-    feedback.upperLeft.KD=this->get_parameter("ulGainArray").as_double_array()[2];
-    feedback.lowerLeft.KP=this->get_parameter("llGainArray").as_double_array()[0];
-    feedback.lowerLeft.KI=this->get_parameter("llGainArray").as_double_array()[1];
-    feedback.lowerLeft.KD=this->get_parameter("llGainArray").as_double_array()[2];
-    feedback.lowerRight.KP=this->get_parameter("lrGainArray").as_double_array()[0];
-    feedback.lowerRight.KI=this->get_parameter("lrGainArray").as_double_array()[1];
-    feedback.lowerRight.KD=this->get_parameter("lrGainArray").as_double_array()[2];
+    feedback.upperRight.KP=this->get_parameter("urGainKP").as_double();
+    feedback.upperRight.KI=this->get_parameter("urGainKI").as_double();
+    feedback.upperRight.KD=this->get_parameter("urGainKD").as_double();
+    feedback.upperLeft.KP=this->get_parameter("ulGainKP").as_double();
+    feedback.upperLeft.KI=this->get_parameter("ulGainKI").as_double();
+    feedback.upperLeft.KD=this->get_parameter("ulGainKD").as_double();
+    feedback.lowerLeft.KP=this->get_parameter("llGainKP").as_double();
+    feedback.lowerLeft.KI=this->get_parameter("llGainKI").as_double();
+    feedback.lowerLeft.KD=this->get_parameter("llGainKD").as_double();
+    feedback.lowerRight.KP=this->get_parameter("lrGainKP").as_double();
+    feedback.lowerRight.KI=this->get_parameter("lrGainKI").as_double();
+    feedback.lowerRight.KD=this->get_parameter("lrGainKD").as_double();
     robomasterValuePublish(feedback.upperRight.target,feedback.upperLeft.target,feedback.lowerLeft.target,feedback.lowerRight.target);
 }
 
