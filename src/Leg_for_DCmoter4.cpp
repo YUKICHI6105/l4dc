@@ -105,11 +105,11 @@ void pubsub::shirasuModePublish(uint8_t upperRight,uint8_t upperLeft,uint8_t low
 void pubsub::valvePublish(uint32_t status[7],uint32_t channel){
   if(status[channel]==1){
     uint32_t a = 1;
-    a = a << (channel+1);
+    a = a << (channel);
     valveArray.transmit = valveArray.transmit | a;
   }else{
     uint32_t b = 1;
-    b = b << (channel+1);
+    b = b << (channel);
     valveArray.transmit = valveArray.transmit ^ b;
   }
 }
@@ -124,7 +124,7 @@ void pubsub::toggle(uint32_t channel,const sensor_msgs::msg::Joy::SharedPtr msg)
           valveArray.status[channel]=1;
         }
         valvePublish(valveArray.status,channel);
-        publisher_->publish(get_frame(0x101,valveArray.status));
+        publisher_->publish(get_frame(0x101,static_cast<uint8_t>(valveArray.transmit)));
         valveArray.preButton[channel]=1;
       }
     }else{
@@ -159,10 +159,10 @@ void pubsub::joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg){
   for(int i=0;i<7;i++){
     if(valveArray.enable[i]==1){
       toggle(i,msg);
-      normal(i,msg);
+      //normal(i,msg);
     }
   }
-  publisher_->publish(get_frame(0x101,static_cast<uint8_t>(valveArray.transmit)));
+  
 //    RCLCPP_INFO(this->get_logger(), "I heard:");
     if(msg->buttons[this->get_parameter("velButton").as_int()]==1){
       shirasuModePublish(5,5,5,5);
