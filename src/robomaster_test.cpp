@@ -29,6 +29,7 @@ class RoboMaster : public rclcpp::Node{
     float y=0.0; 
     float r=0.0;
     float roopTime = 0.001;
+    float maxSpeed = 1.0f;
     
     public:
     RoboMaster() : Node("robomaster_test_node"), count_(0)
@@ -36,7 +37,7 @@ class RoboMaster : public rclcpp::Node{
     publisher_ = this->create_publisher<can_plugins2::msg::Frame>("can_tx", 10);
     subscriber_joy = this->create_subscription<sensor_msgs::msg::Joy>("joy", 10, std::bind(&RoboMaster::joy_callback, this, _1));
     subscriber_can_rx = this->create_subscription<can_plugins2::msg::Frame>("can_rx", 10, std::bind(&RoboMaster::can_callback, this, _1));
-    timer_ = this->create_wall_timer(200ms, std::bind(&RoboMaster::timer_callback, this));
+    timer_ = this->create_wall_timer(50ms, std::bind(&RoboMaster::timer_callback, this));
     this->declare_parameter("upperRight", 1);
     this->declare_parameter("upperLeft", 2);
     this->declare_parameter("lowerLeft", 3);
@@ -53,6 +54,8 @@ class RoboMaster : public rclcpp::Node{
     this->declare_parameter("lrGainKP", 0.0f);
     this->declare_parameter("lrGainKI", 0.0f);
     this->declare_parameter("lrGainKD", 0.0f);
+    this->declare_parameter("rooptime", 0.001f);
+    this->declare_parameter("maxspeed", 1.0f);
     }
     void timer_callback();
     void can_callback(const can_plugins2::msg::Frame msg);
@@ -77,6 +80,8 @@ void RoboMaster::timer_callback(){
     feedback.lowerRight.KP=this->get_parameter("lrGainKP").as_double();
     feedback.lowerRight.KI=this->get_parameter("lrGainKI").as_double();
     feedback.lowerRight.KD=this->get_parameter("lrGainKD").as_double();
+    roopTime = this->get_parameter("rooptime").as_double();
+    maxSpeed = this->get_parameter("maxspeed").as_double();
     robomasterValuePublish(feedback.upperRight.target,feedback.upperLeft.target,feedback.lowerLeft.target,feedback.lowerRight.target);
 }
 
@@ -86,28 +91,48 @@ void RoboMaster::can_callback(const can_plugins2::msg::Frame msg){
         feedback.upperRight.speed = combineBytesToFloat(msg.data[2],msg.data[3])/60;
         feedback.upperRight.current = combineBytes(msg.data[4],msg.data[5]);
         feedback.upperRight.temperature = msg.data[6];
-        feedback.upperRight.target=feedback.upperRight.target+calculatePID((y-x+r),feedback.upperRight);
+        feedback.upperRight.target=feedback.upperRight.target+calculatePID((y-x+r)*maxSpeed,feedback.upperRight);
+        if(feedback.upperRight.target > 20.0){
+            feedback.upperRight.target = 19.0;
+        }else if(feedback.upperRight.target < -20.0){
+            feedback.upperRight.target = -19.0;
+        }
         RCLCPP_INFO(this->get_logger(),"ID %u current %u",msg.id,feedback.upperRight.current);
     }else if(msg.id == (0x200+feedback.upperLeft.number)){
         feedback.upperLeft.locate = combineBytes(msg.data[0],msg.data[1]);
         feedback.upperLeft.speed = combineBytesToFloat(msg.data[2],msg.data[3])/60;
         feedback.upperLeft.current = combineBytes(msg.data[4],msg.data[5]);
         feedback.upperLeft.temperature = msg.data[6];
-        feedback.upperLeft.target = feedback.upperLeft.target + calculatePID((-x-y+r),feedback.upperRight);
+        feedback.upperLeft.target = feedback.upperLeft.target + calculatePID((-x-y+r)*maxSpeed,feedback.upperRight);
+        if(feedback.upperLeft.target > 20.0){
+            feedback.upperLeft.target = 19.0;
+        }else if(feedback.upperLeft.target < -20.0){
+            feedback.upperLeft.target = -19.0;
+        }
         RCLCPP_INFO(this->get_logger(),"ID %u current %u",msg.id,feedback.upperLeft.current);
     }else if(msg.id == (0x200+feedback.lowerLeft.number)){
         feedback.lowerLeft.locate = combineBytes(msg.data[0],msg.data[1]);
         feedback.lowerLeft.speed = combineBytesToFloat(msg.data[2],msg.data[3])/60;
         feedback.lowerLeft.current = combineBytes(msg.data[4],msg.data[5]);
         feedback.lowerLeft.temperature = msg.data[6];
-        feedback.lowerLeft.target = feedback.lowerLeft.target + calculatePID((x-y+r),feedback.lowerLeft);
+        feedback.lowerLeft.target = feedback.lowerLeft.target + calculatePID((x-y+r)*maxSpeed,feedback.lowerLeft);
+        if(feedback.lowerLeft.target > 20.0){
+            feedback.lowerLeft.target = 19.0;
+        }else if(feedback.lowerLeft.target < -20.0){
+            feedback.lowerLeft.target = -19.0;
+        }
         RCLCPP_INFO(this->get_logger(),"ID %u current %u",msg.id,feedback.lowerLeft.current);
     }else if(msg.id == (0x200+feedback.lowerRight.number)){
         feedback.lowerRight.locate = combineBytes(msg.data[0],msg.data[1]);
         feedback.lowerRight.speed = combineBytesToFloat(msg.data[2],msg.data[3])/60;
         feedback.lowerRight.current = combineBytes(msg.data[4],msg.data[5]);
         feedback.lowerRight.temperature = msg.data[6];
-        feedback.lowerRight.target = feedback.lowerRight.target + calculatePID((x+y+r),feedback.lowerRight);
+        feedback.lowerRight.target = feedback.lowerRight.target + calculatePID((x+y+r)*maxSpeed,feedback.lowerRight);
+        if(feedback.lowerRight.target > 20.0){
+            feedback.lowerRight.target = 19.0;
+        }else if(feedback.lowerRight.target < -20.0){
+            feedback.lowerRight.target = -19.0;
+        }
         RCLCPP_INFO(this->get_logger(),"ID %u current %u",msg.id,feedback.lowerRight.current);
     }
 }

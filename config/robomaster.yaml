@@ -4,15 +4,17 @@ robomaster_test_node:
     upperLeft: 2
     lowwerLeft: 3
     lowerRight: 4
-    urGainKP: 3.14
-    urGainKI: 3.14
-    urGainKD: 3.14
-    ulGainKP: 3.14
-    ulGainKI: 3.14
-    ulGainKD: 3.14
-    llGainKP: 3.14
-    llGainKI: 3.14
-    llGainKD: 3.14
-    lrGainKP: 3.14
-    lrGainKI: 3.14
-    lrGainKD: 3.14
+    urGainKP: 10.0
+    urGainKI: 0.0
+    urGainKD: 1.0
+    ulGainKP: 10.0
+    ulGainKI: 0.0
+    ulGainKD: 1.0
+    llGainKP: 10.0
+    llGainKI: 0.0
+    llGainKD: 1.0
+    lrGainKP: 10.0
+    lrGainKI: 0.0
+    lrGainKD: 1.0
+    rooptime: 0.05
+    maxspeed: 0.5
