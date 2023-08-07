@@ -1,0 +1,20 @@
+robomaster_test_node:
+  ros__parameters:
+    upperRight: 1
+    upperLeft: 2
+    lowwerLeft: 3
+    lowerRight: 4
+    urGainKP: 10.0
+    urGainKI: 0.0
+    urGainKD: 1.0
+    ulGainKP: 10.0
+    ulGainKI: 0.0
+    ulGainKD: 1.0
+    llGainKP: 10.0
+    llGainKI: 0.0
+    llGainKD: 1.0
+    lrGainKP: 10.0
+    lrGainKI: 0.0
+    lrGainKD: 1.0
+    rooptime: 0.05
+    maxspeed: 0.5

@@ -5,9 +5,15 @@
 struct RobomasterFeedback{
   uint32_t number;
   uint16_t locate;
-  uint16_t speed;
+  float speed;
   uint16_t current;
   uint16_t temperature;
+  float KP;//比例
+  float KI;//積分
+  float KD;//微分
+  float ie=0;
+  float e_pre=0;
+  float target=0;
 };
 
 template <typename T>
@@ -44,6 +50,11 @@ void splitUint16(uint16_t input, uint8_t* outputArray,int number) {
 uint16_t combineBytes(uint8_t highByte, uint8_t lowByte) {
   uint16_t result = (static_cast<uint16_t>(highByte) << 8) | lowByte;
   return result;
+}
+
+float combineBytesToFloat(uint8_t highByte, uint8_t lowByte) {
+  uint16_t result = (static_cast<uint16_t>(highByte) << 8) | lowByte;
+  return static_cast<float>(result);
 }
 
 void formatvalue(float current,uint8_t value[8], int number){
