@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 project(l4dc)
 
-set(CMAKE_CXX_STANDARD 17)
-
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
@@ -23,6 +21,25 @@ add_executable(robomaster_test_node src/robomaster_test.cpp)
 ament_target_dependencies(l4dc3_node rclcpp std_msgs can_plugins2 sensor_msgs)
 ament_target_dependencies(l4dc4_node rclcpp std_msgs can_plugins2 sensor_msgs)
 ament_target_dependencies(robomaster_test_node rclcpp std_msgs can_plugins2 sensor_msgs)
+
+target_include_directories(l4dc3_node PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
+target_include_directories(l4dc4_node PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
+target_include_directories(robomaster_test_node PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
+target_compile_features(l4dc3_node PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_features(l4dc4_node PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_features(robomaster_test_node PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 
 install(
   TARGETS l4dc3_node l4dc4_node robomaster_test_node

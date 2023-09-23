@@ -7,8 +7,8 @@
 #include <rclcpp/rclcpp.hpp>
 #include <can_plugins2/msg/frame.hpp>
 #include <sensor_msgs/msg/joy.hpp>
-#include "../include/can_utils.hpp"
-#include "../include/l4dc4_setting.hpp"
+#include "can_utils.hpp"
+#include "l4dc4_setting.hpp"
 
 using std::placeholders::_1;
 using namespace std::chrono_literals;

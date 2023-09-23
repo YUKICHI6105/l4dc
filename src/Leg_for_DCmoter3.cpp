@@ -5,7 +5,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "can_plugins2/msg/frame.hpp"
 #include <sensor_msgs/msg/joy.hpp>
-#include "../include/can_utils.hpp"
+#include "can_utils.hpp"
 
 
 using std::placeholders::_1;
