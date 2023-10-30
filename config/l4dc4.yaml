@@ -5,6 +5,6 @@ l4dc4_node:
     upperLeft: 0x164
     lowerLeft: 0x168
     lowerRight: 0x16c
-    velButton: 7
+    velButton: 6
     disButton: 1
     # syoukou: 0x170
