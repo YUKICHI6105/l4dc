@@ -57,7 +57,7 @@ void pubsub::timer_callback()
       shirasuID.upperLeftID = this->get_parameter("upperLeft").as_int();
       shirasuID.lowerLeftID = this->get_parameter("lowerLeft").as_int();
       shirasuID.lowerRightID = this->get_parameter("lowerRight").as_int();
-      shirasuID.syoukouID = this->get_parameter("syoukou").as_int();
+      //shirasuID.syoukouID = this->get_parameter("syoukou").as_int();
       RCLCPP_INFO(this->get_logger(), "max speed %f!", maxSpeed);
       RCLCPP_INFO(this->get_logger(), "upperRight %d! upperLeft %d! lowerLeft %d! lowerRight %d! syoukou %d!", shirasuID.upperRightID ,shirasuID.upperLeftID, shirasuID.lowerLeftID, shirasuID.lowerRightID, shirasuID.syoukouID);
     }
