@@ -37,6 +37,8 @@ target_include_directories(robomaster_test_node PUBLIC
   $<INSTALL_INTERFACE:include>
 )
 
+ament_export_include_directories(include)
+
 target_compile_features(l4dc3_node PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 target_compile_features(l4dc4_node PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 target_compile_features(robomaster_test_node PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17

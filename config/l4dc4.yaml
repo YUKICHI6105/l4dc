@@ -2,9 +2,9 @@ l4dc4_node:
   ros__parameters:
     maxSpeed: 3.14
     upperRight: 0x160
-    upperLeft: 0x164
-    lowerLeft: 0x168
-    lowerRight: 0x16c
+    upperLeft: 0x16c
+    lowerLeft: 0x164
+    lowerRight: 0x168
     velButton: 6
     disButton: 1
-    # syoukou: 0x170
+    # syoukou: 0x154
